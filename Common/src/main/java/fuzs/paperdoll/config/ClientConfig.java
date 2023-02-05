@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ClientConfig implements ConfigCore {
-    @Config(description = "Scale of paper doll. Also influenced by \"GUI Scale\" option in \"Video Settings\".")
+    @Config(description = "Scale of paper doll. Also affected by video settings gui scale.")
     @Config.IntRange(min = 1, max = 24)
     public int scale = 4;
     @Config(description = "Offset on x-axis from original doll position.")
@@ -20,7 +20,7 @@ public class ClientConfig implements ConfigCore {
     public int offsetY = 0;
     @Config(description = "Amount of ticks the paper doll will be kept on screen after its display conditions are no longer met. Set to 0 to always display the doll.")
     @Config.IntRange(min = 0)
-    public int displayTime = 12;
+    public int displayTime = 20;
     @Config(description = "Define a screen corner to align the paper doll display to.")
     public PositionPreset position = PositionPreset.TOP_LEFT;
     @Config(description = "Shift paper doll downwards when it would otherwise overlap with potion icons while showing in the top screen right corner.")

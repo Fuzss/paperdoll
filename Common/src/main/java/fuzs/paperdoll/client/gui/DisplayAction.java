@@ -1,13 +1,15 @@
 package fuzs.paperdoll.client.gui;
 
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.function.Predicate;
 
 public enum DisplayAction {
     SPRINTING(Player::canSpawnSprintParticle),
-    SWIMMING(player -> player.getSwimAmount(1.0F) > 0 && player.isInWater()),
-    CRAWLING(player -> player.getSwimAmount(1.0F) > 0 && !player.isInWater()),
+    SWIMMING(Predicate.not(Player::isVisuallyCrawling).and(Player::isVisuallySwimming)),
+    CRAWLING(Player::isVisuallyCrawling),
     CROUCHING(Player::isCrouching),
     FLYING(player -> player.getAbilities().flying),
     GLIDING(Player::isFallFlying),

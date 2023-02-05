@@ -6,12 +6,18 @@ import fuzs.paperdoll.client.gui.PaperDollRenderer;
 import fuzs.paperdoll.config.ClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 
 public class PaperDollHandler {
+    private static final float MAX_ROTATION_DEGREES = 30.0F;
+    private static final float SPIN_BACK_SPEED = 10.0F;
+
     private static int remainingDisplayTicks;
     private static int remainingRidingTicks;
+    private static float yRotOffset;
+    private static float yRotOffsetO;
 
     public static void onClientTick$End(Minecraft minecraft) {
 
@@ -29,9 +35,12 @@ public class PaperDollHandler {
         }
 
         // reset rotation when no longer shown
-        if (remainingDisplayTicks <= 0 && config.displayTime != 0) {
+        if (remainingDisplayTicks > 0 || config.displayTime == 0) {
 
-            PaperDollRenderer.INSTANCE.reset();
+            tickYRotOffset(minecraft.player);
+        } else {
+
+            yRotOffset = yRotOffsetO = 0;
         }
 
         // don't show paper doll in sneaking position after unmounting a vehicle / mount
@@ -41,6 +50,27 @@ public class PaperDollHandler {
         } else if (remainingRidingTicks > 0) {
 
             remainingRidingTicks--;
+        }
+    }
+
+    private static void tickYRotOffset(Player player) {
+
+        yRotOffsetO = yRotOffset;
+
+        // apply rotation change from entity
+        yRotOffset = Mth.clamp(yRotOffset + (player.yHeadRot - player.yHeadRotO) * 0.5F, -MAX_ROTATION_DEGREES, MAX_ROTATION_DEGREES);
+        // rotate back to origin, never overshoot 0
+        float nextYRotOffset = yRotOffset - yRotOffset / SPIN_BACK_SPEED;
+
+        if (yRotOffset < 0.0F) {
+
+            yRotOffset = Math.min(0, nextYRotOffset);
+        } else if (yRotOffset > 0.0F) {
+
+            yRotOffset = Math.max(0, nextYRotOffset);
+        } else {
+
+            yRotOffset = 0.0F;
         }
     }
 
@@ -61,13 +91,13 @@ public class PaperDollHandler {
                     int posX = config.position.getX(0, screenWidth, (int) (scale * 1.5F) + config.offsetX);
                     // can't use PositionPreset#getY as the orientation point isn't in the top left corner of the image
                     int posY = config.position.isBottom() ? screenHeight - scale - config.offsetY : (int) (scale * 2.5F) + config.offsetY;
-                    posY -= scale - updateOffset(player, tickDelta) * scale;
+                    posY -= scale - getCurrentHeightOffset(player, tickDelta) * scale;
                     if (config.potionShift) {
 
                         posY += config.position.getPotionShift(player.getActiveEffects());
                     }
 
-                    PaperDollRenderer.INSTANCE.drawEntityOnScreen(posX, posY, scale, player, tickDelta);
+                    PaperDollRenderer.drawEntityOnScreen(posX, posY, scale, player, tickDelta);
                 }
             }
         }
@@ -75,7 +105,7 @@ public class PaperDollHandler {
         minecraft.getProfiler().pop();
     }
 
-    private static float updateOffset(Player player, float tickDelta) {
+    private static float getCurrentHeightOffset(Player player, float tickDelta) {
 
         // crouching check after elytra since you can do both at the same time
         float height = player.getDimensions(Pose.STANDING).height;
@@ -108,6 +138,32 @@ public class PaperDollHandler {
         } else {
 
             return 1.0F;
+        }
+    }
+
+    public static void applyEntityRotations(LivingEntity entity) {
+
+        ClientConfig config = PaperDoll.CONFIG.get(ClientConfig.class);
+
+        ClientConfig.HeadMovement headMovement = config.headMovement;
+        // head rotation is used for doll rotation as it updates a lot more precisely than the body rotation
+        if (headMovement == ClientConfig.HeadMovement.YAW || entity.isFallFlying()) {
+
+            entity.setXRot(7.5F);
+            entity.xRotO = 7.5F;
+        }
+
+        final float defaultRotationYaw = 180.0F + config.position.getRotation(MAX_ROTATION_DEGREES / 2.0F);
+
+        entity.yBodyRot = entity.yBodyRotO = defaultRotationYaw;
+
+        if (headMovement == ClientConfig.HeadMovement.PITCH) {
+
+            entity.yHeadRot = entity.yHeadRotO = defaultRotationYaw;
+        } else {
+
+            entity.yHeadRotO = defaultRotationYaw + yRotOffsetO;
+            entity.yHeadRot = defaultRotationYaw + yRotOffset;
         }
     }
 }

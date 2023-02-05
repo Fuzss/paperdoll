@@ -2,7 +2,6 @@ package fuzs.paperdoll.client;
 
 import fuzs.paperdoll.PaperDoll;
 import fuzs.paperdoll.client.handler.PaperDollHandler;
-import fuzs.puzzleslib.client.core.ClientFactories;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGuiEvent;
@@ -17,7 +16,6 @@ public class PaperDollForgeClient {
 
     @SubscribeEvent
     public static void onConstructMod(final FMLConstructModEvent evt) {
-        ClientFactories.INSTANCE.clientModConstructor(PaperDoll.MOD_ID).accept(new PaperDollClient());
         registerHandlers();
     }
 

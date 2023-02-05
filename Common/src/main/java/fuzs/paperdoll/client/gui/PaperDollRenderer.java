@@ -5,22 +5,15 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
-import fuzs.paperdoll.PaperDoll;
-import fuzs.paperdoll.config.ClientConfig;
+import fuzs.paperdoll.client.handler.PaperDollHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 
 public class PaperDollRenderer {
-    private static final float MAX_DOLL_ROTATION = 30.0F;
-    public static final PaperDollRenderer INSTANCE = new PaperDollRenderer();
 
-    private float rotationYaw;
-    private float rotationYawO;
-
-    public void drawEntityOnScreen(int posX, int posY, int scale, LivingEntity entity, float partialTicks) {
+    public static void drawEntityOnScreen(int posX, int posY, int scale, LivingEntity entity, float partialTicks) {
 
         // prepare
         RenderSystem.disableCull();
@@ -47,7 +40,7 @@ public class PaperDollRenderer {
         float yBodyRotO = entity.yBodyRotO;
         float yHeadRotO = entity.yHeadRotO;
 
-        this.setEntityRotations(entity, partialTicks, yHeadRot, yHeadRotO);
+        PaperDollHandler.applyEntityRotations(entity);
 
         // do render
         Lighting.setupForEntityInInventory();
@@ -75,60 +68,5 @@ public class PaperDollRenderer {
         RenderSystem.enableCull();
         RenderSystem.applyModelViewMatrix();
         Lighting.setupFor3DItems();
-    }
-
-    private void setEntityRotations(LivingEntity entity, float partialTicks, float yHeadRot, float yHeadRotO) {
-
-        ClientConfig.HeadMovement headMovement = PaperDoll.CONFIG.get(ClientConfig.class).headMovement;
-        // head rotation is used for doll rotation as it updates a lot more precisely than the body rotation
-        if (headMovement == ClientConfig.HeadMovement.YAW || entity.isFallFlying()) {
-
-            entity.setXRot(7.5F);
-            entity.xRotO = 7.5F;
-        }
-
-        float defaultRotationYaw = 180.0F + PaperDoll.CONFIG.get(ClientConfig.class).position.getRotation(MAX_DOLL_ROTATION / 2.0F);
-        entity.yBodyRot = defaultRotationYaw;
-        entity.yBodyRotO = defaultRotationYaw;
-        if (headMovement == ClientConfig.HeadMovement.PITCH) {
-
-            entity.yHeadRotO = defaultRotationYaw;
-            entity.yHeadRot = defaultRotationYaw;
-        } else {
-
-            entity.yHeadRotO = defaultRotationYaw + this.rotationYaw;
-            this.rotationYaw = this.rotateEntity(this.rotationYaw, yHeadRot - yHeadRotO, partialTicks);
-            entity.yHeadRot = defaultRotationYaw + this.rotationYaw;
-        }
-    }
-
-    /**
-     * Rotate entity according to its yaw, slowly spin back to default when yaw stays constant for a while
-     */
-    private float rotateEntity(float rotationYaw, float yBodyRotDiff, float partialTicks) {
-
-        if (Minecraft.getInstance().isPaused()) {
-
-            return rotationYaw;
-        }
-
-        // apply rotation change from entity
-        rotationYaw = Mth.clamp(rotationYaw + yBodyRotDiff * 0.5F, -MAX_DOLL_ROTATION, MAX_DOLL_ROTATION);
-        // rotate back to origin, never overshoot 0
-        float nextRotationYaw = rotationYaw - partialTicks * rotationYaw / 15.0F;
-        if (rotationYaw < 0.0F) {
-
-            return Math.min(0, nextRotationYaw);
-        } else if (rotationYaw > 0.0F) {
-
-            return Math.max(0, nextRotationYaw);
-        }
-
-        return 0.0F;
-    }
-
-    public void reset() {
-
-        this.rotationYaw = this.rotationYawO = 0;
     }
 }

@@ -1,4 +1,4 @@
-package fuzs.paperdoll.client.handler;
+package fuzs.paperdoll.client.gui;
 
 import net.minecraft.world.entity.player.Player;
 

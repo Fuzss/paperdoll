@@ -2,7 +2,7 @@ package fuzs.paperdoll.client.handler;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import fuzs.paperdoll.PaperDoll;
-import fuzs.paperdoll.client.PaperDollRenderer;
+import fuzs.paperdoll.client.gui.PaperDollRenderer;
 import fuzs.paperdoll.config.ClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
@@ -10,7 +10,6 @@ import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 
 public class PaperDollHandler {
-
     private static int remainingDisplayTicks;
     private static int remainingRidingTicks;
 

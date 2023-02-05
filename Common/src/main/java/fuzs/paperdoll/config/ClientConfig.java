@@ -1,7 +1,7 @@
 package fuzs.paperdoll.config;
 
-import fuzs.paperdoll.client.PositionPreset;
-import fuzs.paperdoll.client.handler.DisplayAction;
+import fuzs.paperdoll.client.gui.PositionPreset;
+import fuzs.paperdoll.client.gui.DisplayAction;
 import fuzs.puzzleslib.config.ConfigCore;
 import fuzs.puzzleslib.config.annotation.Config;
 

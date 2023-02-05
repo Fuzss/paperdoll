@@ -1,4 +1,4 @@
-package fuzs.paperdoll.client;
+package fuzs.paperdoll.client.gui;
 
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -17,7 +17,8 @@ public class PaperDollRenderer {
     private static final float MAX_DOLL_ROTATION = 30.0F;
     public static final PaperDollRenderer INSTANCE = new PaperDollRenderer();
 
-    private float prevRotationYaw;
+    private float rotationYaw;
+    private float rotationYawO;
 
     public void drawEntityOnScreen(int posX, int posY, int scale, LivingEntity entity, float partialTicks) {
 
@@ -45,7 +46,8 @@ public class PaperDollRenderer {
         float xRotO = entity.xRotO;
         float yBodyRotO = entity.yBodyRotO;
         float yHeadRotO = entity.yHeadRotO;
-        this.prevRotationYaw = this.updateRotation(entity, partialTicks, this.prevRotationYaw, yHeadRot, yHeadRotO);
+
+        this.setEntityRotations(entity, partialTicks, yHeadRot, yHeadRotO);
 
         // do render
         Lighting.setupForEntityInInventory();
@@ -75,17 +77,17 @@ public class PaperDollRenderer {
         Lighting.setupFor3DItems();
     }
 
-    private float updateRotation(LivingEntity entity, float partialTicks, float prevRotationYaw, float yHeadRot, float yHeadRotO) {
+    private void setEntityRotations(LivingEntity entity, float partialTicks, float yHeadRot, float yHeadRotO) {
 
         ClientConfig.HeadMovement headMovement = PaperDoll.CONFIG.get(ClientConfig.class).headMovement;
         // head rotation is used for doll rotation as it updates a lot more precisely than the body rotation
-        float defaultRotationYaw = 180.0F + PaperDoll.CONFIG.get(ClientConfig.class).position.getRotation(MAX_DOLL_ROTATION / 2.0F);
         if (headMovement == ClientConfig.HeadMovement.YAW || entity.isFallFlying()) {
 
             entity.setXRot(7.5F);
             entity.xRotO = 7.5F;
         }
 
+        float defaultRotationYaw = 180.0F + PaperDoll.CONFIG.get(ClientConfig.class).position.getRotation(MAX_DOLL_ROTATION / 2.0F);
         entity.yBodyRot = defaultRotationYaw;
         entity.yBodyRotO = defaultRotationYaw;
         if (headMovement == ClientConfig.HeadMovement.PITCH) {
@@ -94,12 +96,10 @@ public class PaperDollRenderer {
             entity.yHeadRot = defaultRotationYaw;
         } else {
 
-            entity.yHeadRotO = defaultRotationYaw + prevRotationYaw;
-            prevRotationYaw = this.rotateEntity(prevRotationYaw, yHeadRot - yHeadRotO, partialTicks);
-            entity.yHeadRot = defaultRotationYaw + prevRotationYaw;
+            entity.yHeadRotO = defaultRotationYaw + this.rotationYaw;
+            this.rotationYaw = this.rotateEntity(this.rotationYaw, yHeadRot - yHeadRotO, partialTicks);
+            entity.yHeadRot = defaultRotationYaw + this.rotationYaw;
         }
-
-        return prevRotationYaw;
     }
 
     /**
@@ -115,20 +115,20 @@ public class PaperDollRenderer {
         // apply rotation change from entity
         rotationYaw = Mth.clamp(rotationYaw + yBodyRotDiff * 0.5F, -MAX_DOLL_ROTATION, MAX_DOLL_ROTATION);
         // rotate back to origin, never overshoot 0
-        partialTicks = rotationYaw - partialTicks * rotationYaw / 15.0F;
+        float nextRotationYaw = rotationYaw - partialTicks * rotationYaw / 15.0F;
         if (rotationYaw < 0.0F) {
 
-            rotationYaw = Math.min(0, partialTicks);
+            return Math.min(0, nextRotationYaw);
         } else if (rotationYaw > 0.0F) {
 
-            rotationYaw = Math.max(0, partialTicks);
+            return Math.max(0, nextRotationYaw);
         }
 
-        return rotationYaw;
+        return 0.0F;
     }
 
     public void reset() {
 
-        this.prevRotationYaw = 0;
+        this.rotationYaw = this.rotationYawO = 0;
     }
 }

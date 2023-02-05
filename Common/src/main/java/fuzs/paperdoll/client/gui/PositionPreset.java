@@ -1,24 +1,22 @@
-package fuzs.paperdoll.client;
+package fuzs.paperdoll.client.gui;
 
 import net.minecraft.world.effect.MobEffectInstance;
 
 import java.util.Collection;
 
 public enum PositionPreset {
-    TOP_LEFT(0, 0, false),
-    TOP_RIGHT(1, 0, true),
-    BOTTOM_LEFT(0, 1, false),
-    BOTTOM_RIGHT(1, 1, false);
+    TOP_LEFT(0, 0),
+    TOP_RIGHT(1, 0),
+    BOTTOM_LEFT(0, 1),
+    BOTTOM_RIGHT(1, 1);
 
     private final int posX;
     private final int posY;
-    private final boolean shift;
 
-    PositionPreset(int posX, int posY, boolean potionShift) {
+    PositionPreset(int posX, int posY) {
 
         this.posX = posX;
         this.posY = posY;
-        this.shift = potionShift;
     }
 
     public boolean isMirrored() {
@@ -49,7 +47,7 @@ public enum PositionPreset {
 
     public int getPotionShift(Collection<MobEffectInstance> activeEffects) {
 
-        if (!this.shift) return 0;
+        if (this != TOP_RIGHT) return 0;
 
         if (!activeEffects.isEmpty()) {
 
@@ -61,5 +59,4 @@ public enum PositionPreset {
 
         return 0;
     }
-
 }

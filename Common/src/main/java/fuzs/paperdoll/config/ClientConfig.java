@@ -1,9 +1,9 @@
 package fuzs.paperdoll.config;
 
-import fuzs.paperdoll.client.gui.PositionPreset;
 import fuzs.paperdoll.client.gui.DisplayAction;
-import fuzs.puzzleslib.config.ConfigCore;
-import fuzs.puzzleslib.config.annotation.Config;
+import fuzs.paperdoll.client.gui.PositionPreset;
+import fuzs.puzzleslib.api.config.v3.Config;
+import fuzs.puzzleslib.api.config.v3.ConfigCore;
 
 import java.util.List;
 import java.util.Objects;
@@ -20,7 +20,7 @@ public class ClientConfig implements ConfigCore {
     public int offsetY = 0;
     @Config(description = "Amount of ticks the paper doll will be kept on screen after its display conditions are no longer met. Set to 0 to always display the doll.")
     @Config.IntRange(min = 0)
-    public int displayTime = 20;
+    public int displayTime = 15;
     @Config(description = "Define a screen corner to align the paper doll display to.")
     public PositionPreset position = PositionPreset.TOP_LEFT;
     @Config(description = "Shift paper doll downwards when it would otherwise overlap with potion icons while showing in the top screen right corner.")

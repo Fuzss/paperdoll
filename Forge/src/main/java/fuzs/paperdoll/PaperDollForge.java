@@ -1,6 +1,6 @@
 package fuzs.paperdoll;
 
-import fuzs.puzzleslib.core.CommonFactories;
+import fuzs.puzzleslib.api.core.v1.ModConstructor;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
@@ -11,6 +11,6 @@ public class PaperDollForge {
 
     @SubscribeEvent
     public static void onConstructMod(final FMLConstructModEvent evt) {
-        CommonFactories.INSTANCE.modConstructor(PaperDoll.MOD_ID).accept(new PaperDoll());
+        ModConstructor.construct(PaperDoll.MOD_ID, PaperDoll::new);
     }
 }

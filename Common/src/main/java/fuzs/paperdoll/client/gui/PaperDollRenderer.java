@@ -3,13 +3,12 @@ package fuzs.paperdoll.client.gui;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
 import fuzs.paperdoll.client.handler.PaperDollHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.world.entity.LivingEntity;
+import org.joml.Quaternionf;
 
 public class PaperDollRenderer {
 
@@ -27,8 +26,8 @@ public class PaperDollRenderer {
         PoseStack poseStack2 = new PoseStack();
         poseStack2.translate(0.0, 0.0, 1000.0);
         poseStack2.scale((float) scale, (float) scale, (float) scale);
-        Quaternion quaternionZ = Vector3f.ZP.rotationDegrees(180.0F);
-        Quaternion quaternionX = Vector3f.XP.rotationDegrees(15.0F);
+        Quaternionf quaternionZ = new Quaternionf().rotateZ(180.0F * 0.017453292F);
+        Quaternionf quaternionX = new Quaternionf().rotateX(15.0F * 0.017453292F);
         quaternionZ.mul(quaternionX);
         poseStack2.mulPose(quaternionZ);
 
@@ -45,7 +44,7 @@ public class PaperDollRenderer {
         // do render
         Lighting.setupForEntityInInventory();
         EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
-        quaternionX.conj();
+        quaternionX.conjugate();
         dispatcher.overrideCameraOrientation(quaternionX);
         dispatcher.setRenderShadow(false);
         MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();

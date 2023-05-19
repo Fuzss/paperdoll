@@ -1,12 +1,8 @@
 package fuzs.paperdoll.client;
 
 import fuzs.paperdoll.PaperDoll;
-import fuzs.paperdoll.client.handler.PaperDollHandler;
-import net.minecraft.client.Minecraft;
+import fuzs.puzzleslib.api.client.core.v1.ClientModConstructor;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderGuiEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
@@ -16,15 +12,6 @@ public class PaperDollForgeClient {
 
     @SubscribeEvent
     public static void onConstructMod(final FMLConstructModEvent evt) {
-        registerHandlers();
-    }
-
-    private static void registerHandlers() {
-        MinecraftForge.EVENT_BUS.addListener((final TickEvent.ClientTickEvent evt) -> {
-            if (evt.phase == TickEvent.Phase.END) PaperDollHandler.onClientTick$End(Minecraft.getInstance());
-        });
-        MinecraftForge.EVENT_BUS.addListener((final RenderGuiEvent.Post evt) -> {
-            PaperDollHandler.onRenderGui$Post(evt.getPoseStack(), evt.getWindow().getGuiScaledWidth(), evt.getWindow().getGuiScaledHeight(), evt.getPartialTick());
-        });
+        ClientModConstructor.construct(PaperDoll.MOD_ID, PaperDollClient::new);
     }
 }

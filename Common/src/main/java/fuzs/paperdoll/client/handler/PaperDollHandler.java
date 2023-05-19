@@ -74,13 +74,10 @@ public class PaperDollHandler {
         }
     }
 
-    public static void onRenderGui$Post(PoseStack poseStack, int screenWidth, int screenHeight, float tickDelta) {
-
-        Minecraft minecraft = Minecraft.getInstance();
+    public static void onRenderGui$Post(Minecraft minecraft, PoseStack poseStack, float tickDelta, int screenWidth, int screenHeight) {
 
         minecraft.getProfiler().push("paperDoll");
-        Player player = minecraft.player;
-        if (!player.isInvisible() && !minecraft.player.isSpectator()) {
+        if (!minecraft.player.isInvisible() && !minecraft.player.isSpectator()) {
 
             ClientConfig config = PaperDoll.CONFIG.get(ClientConfig.class);
             if (minecraft.options.getCameraType().isFirstPerson() || !config.firstPersonOnly) {
@@ -91,13 +88,13 @@ public class PaperDollHandler {
                     int posX = config.position.getX(0, screenWidth, (int) (scale * 1.5F) + config.offsetX);
                     // can't use PositionPreset#getY as the orientation point isn't in the top left corner of the image
                     int posY = config.position.isBottom() ? screenHeight - scale - config.offsetY : (int) (scale * 2.5F) + config.offsetY;
-                    posY -= scale - getCurrentHeightOffset(player, tickDelta) * scale;
+                    posY -= scale - getCurrentHeightOffset(minecraft.player, tickDelta) * scale;
                     if (config.potionShift) {
 
-                        posY += config.position.getPotionShift(player.getActiveEffects());
+                        posY += config.position.getPotionShift(minecraft.player.getActiveEffects());
                     }
 
-                    PaperDollRenderer.drawEntityOnScreen(posX, posY, scale, player, tickDelta);
+                    PaperDollRenderer.drawEntityOnScreen(posX, posY, scale, minecraft.player, tickDelta);
                 }
             }
         }

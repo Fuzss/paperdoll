@@ -1,10 +1,10 @@
 package fuzs.paperdoll.client.handler;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import fuzs.paperdoll.PaperDoll;
 import fuzs.paperdoll.client.gui.PaperDollRenderer;
 import fuzs.paperdoll.config.ClientConfig;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
@@ -74,7 +74,7 @@ public class PaperDollHandler {
         }
     }
 
-    public static void onRenderGui$Post(Minecraft minecraft, PoseStack poseStack, float tickDelta, int screenWidth, int screenHeight) {
+    public static void onRenderGui$Post(Minecraft minecraft, GuiGraphics guiGraphics, float tickDelta, int screenWidth, int screenHeight) {
 
         minecraft.getProfiler().push("paperDoll");
         if (!minecraft.player.isInvisible() && !minecraft.player.isSpectator()) {

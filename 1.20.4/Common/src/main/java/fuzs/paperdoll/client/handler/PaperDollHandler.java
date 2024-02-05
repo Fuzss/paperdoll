@@ -19,7 +19,7 @@ public class PaperDollHandler {
     private static float yRotOffset;
     private static float yRotOffsetO;
 
-    public static void onClientTick$End(Minecraft minecraft) {
+    public static void onEndClientTick(Minecraft minecraft) {
 
         if (minecraft.player == null || minecraft.isPaused()) return;
 
@@ -74,7 +74,7 @@ public class PaperDollHandler {
         }
     }
 
-    public static void onRenderGui$Post(Minecraft minecraft, GuiGraphics guiGraphics, float tickDelta, int screenWidth, int screenHeight) {
+    public static void onRenderGui(Minecraft minecraft, GuiGraphics guiGraphics, float tickDelta, int screenWidth, int screenHeight) {
 
         minecraft.getProfiler().push("paperDoll");
         if (!minecraft.player.isInvisible() && !minecraft.player.isSpectator()) {
@@ -94,7 +94,7 @@ public class PaperDollHandler {
                         posY += config.position.getPotionShift(minecraft.player.getActiveEffects());
                     }
 
-                    PaperDollRenderer.drawEntityOnScreen(posX, posY, scale, minecraft.player, tickDelta);
+                    PaperDollRenderer.drawEntityOnScreen(guiGraphics, posX, posY, scale, minecraft.player, tickDelta);
                 }
             }
         }

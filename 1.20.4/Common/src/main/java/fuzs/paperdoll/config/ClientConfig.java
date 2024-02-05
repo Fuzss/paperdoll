@@ -1,14 +1,14 @@
 package fuzs.paperdoll.config;
 
+import fuzs.paperdoll.PaperDoll;
 import fuzs.paperdoll.client.gui.DisplayAction;
 import fuzs.paperdoll.client.gui.PositionPreset;
 import fuzs.puzzleslib.api.config.v3.Config;
 import fuzs.puzzleslib.api.config.v3.ConfigCore;
+import fuzs.puzzleslib.api.config.v3.serialization.ConfigDataSet;
+import fuzs.puzzleslib.api.config.v3.serialization.KeyedValueProvider;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ClientConfig implements ConfigCore {
     @Config(description = "Scale of paper doll. Also affected by video settings gui scale.")
@@ -29,21 +29,35 @@ public class ClientConfig implements ConfigCore {
     public boolean firstPersonOnly = true;
     @Config(description = "Set axis the player head can move on.")
     public ClientConfig.HeadMovement headMovement = HeadMovement.YAW;
+    public ConfigDataSet<DisplayAction> displayActions;
     @Config(name = "display_actions", description = "Display paper doll while performing these actions.")
-    @Config.AllowedValues(values = {"SPRINTING", "SWIMMING", "CRAWLING", "CROUCHING", "FLYING", "GLIDING", "RIDING", "SPIN_ATTACKING", "USING"})
-    List<String> displayActionsRaw = Stream.of(DisplayAction.SPRINTING, DisplayAction.SWIMMING, DisplayAction.CRAWLING, DisplayAction.CROUCHING, DisplayAction.FLYING, DisplayAction.GLIDING).map(Enum::name).collect(Collectors.toList());
-
-    public List<DisplayAction> displayActions;
+    @Config.AllowedValues(values = {
+            "paperdoll:sprinting",
+            "paperdoll:swimming",
+            "paperdoll:crawling",
+            "paperdoll:crouching",
+            "paperdoll:flying",
+            "paperdoll:gliding",
+            "paperdoll:riding",
+            "paperdoll:spin_attacking",
+            "paperdoll:using"
+    }
+    )
+    List<String> displayActionsRaw = KeyedValueProvider.toString(DisplayAction.class,
+            PaperDoll.MOD_ID,
+            DisplayAction.SPRINTING,
+            DisplayAction.SWIMMING,
+            DisplayAction.CRAWLING,
+            DisplayAction.CROUCHING,
+            DisplayAction.FLYING,
+            DisplayAction.GLIDING
+    );
 
     @Override
     public void afterConfigReload() {
-        this.displayActions = this.displayActionsRaw.stream().map(name -> {
-            try {
-                return DisplayAction.valueOf(name);
-            } catch (IllegalArgumentException ignored) {
-                return null;
-            }
-        }).filter(Objects::nonNull).toList();
+        this.displayActions = ConfigDataSet.from(KeyedValueProvider.enumConstants(DisplayAction.class,
+                PaperDoll.MOD_ID
+        ), this.displayActionsRaw);
     }
 
     public enum HeadMovement {

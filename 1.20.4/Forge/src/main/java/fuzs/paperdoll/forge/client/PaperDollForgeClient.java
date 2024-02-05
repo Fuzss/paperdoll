@@ -1,6 +1,7 @@
-package fuzs.paperdoll.client;
+package fuzs.paperdoll.forge.client;
 
 import fuzs.paperdoll.PaperDoll;
+import fuzs.paperdoll.client.PaperDollClient;
 import fuzs.puzzleslib.api.client.core.v1.ClientModConstructor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

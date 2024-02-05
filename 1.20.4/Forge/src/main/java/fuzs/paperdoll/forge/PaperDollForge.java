@@ -1,5 +1,6 @@
-package fuzs.paperdoll;
+package fuzs.paperdoll.forge;
 
+import fuzs.paperdoll.PaperDoll;
 import fuzs.puzzleslib.api.core.v1.ModConstructor;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;

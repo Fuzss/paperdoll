@@ -3,7 +3,7 @@ package fuzs.paperdoll.client;
 import fuzs.paperdoll.client.handler.PaperDollHandler;
 import fuzs.puzzleslib.api.client.core.v1.ClientModConstructor;
 import fuzs.puzzleslib.api.client.event.v1.ClientTickEvents;
-import fuzs.puzzleslib.api.client.event.v1.RenderGuiCallback;
+import fuzs.puzzleslib.api.client.event.v1.renderer.RenderGuiCallback;
 
 public class PaperDollClient implements ClientModConstructor {
 
@@ -13,7 +13,7 @@ public class PaperDollClient implements ClientModConstructor {
     }
 
     private static void registerHandlers() {
-        ClientTickEvents.END.register(PaperDollHandler::onClientTick$End);
-        RenderGuiCallback.EVENT.register(PaperDollHandler::onRenderGui$Post);
+        ClientTickEvents.END.register(PaperDollHandler::onEndClientTick);
+        RenderGuiCallback.EVENT.register(PaperDollHandler::onRenderGui);
     }
 }

@@ -8,13 +8,12 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 public class PaperDollRenderer {
 
-    public static void drawEntityOnScreen(GuiGraphics guiGraphics, int posX, int posY, int scale, LivingEntity entity, float partialTicks) {
+    public static void renderEntityInInventoryUpdateRotations(GuiGraphics guiGraphics, int posX, int posY, int scale, LivingEntity entity, float partialTicks) {
 
         // save rotation as we don't want to change the actual entity
         PlayerRotations playerRotations = new PlayerRotations(entity);
@@ -24,14 +23,7 @@ public class PaperDollRenderer {
         Quaternionf pose = new Quaternionf().rotateZ(180.0F * 0.017453292F);
         Quaternionf cameraOrientation = new Quaternionf().rotateX(15.0F * 0.017453292F);
         pose.mul(cameraOrientation);
-        renderEntityInInventory(guiGraphics,
-                posX,
-                posY,
-                scale,
-                new Vector3f(),
-                pose,
-                cameraOrientation,
-                entity,
+        renderEntityInInventory(guiGraphics, posX, posY, scale, new Vector3f(), pose, cameraOrientation, entity,
                 partialTicks
         );
 
@@ -40,13 +32,15 @@ public class PaperDollRenderer {
     }
 
     /**
-     * Copied from {@link net.minecraft.client.gui.screens.inventory.InventoryScreen#renderEntityInInventory(GuiGraphics, float, float, int, Vector3f, Quaternionf, Quaternionf, LivingEntity)}, but with additional partialTicks parameter.
+     * Copied from
+     * {@link net.minecraft.client.gui.screens.inventory.InventoryScreen#renderEntityInInventory(GuiGraphics, float,
+     * float, float, Vector3f, Quaternionf, Quaternionf, LivingEntity)}, but with additional partial tick parameter.
      */
-    public static void renderEntityInInventory(GuiGraphics guiGraphics, float x, float y, int scale, Vector3f translate, Quaternionf pose, @Nullable Quaternionf cameraOrientation, LivingEntity entity, float partialTicks) {
+    public static void renderEntityInInventory(GuiGraphics guiGraphics, float x, float y, int scale, Vector3f translate, Quaternionf pose, @Nullable Quaternionf cameraOrientation, LivingEntity entity, float partialTick) {
 
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(x, y, 50.0);
-        guiGraphics.pose().mulPoseMatrix((new Matrix4f()).scaling((float) scale, (float) scale, (float) (-scale)));
+        guiGraphics.pose().scale(scale, scale, -scale);
         guiGraphics.pose().translate(translate.x, translate.y, translate.z);
         guiGraphics.pose().mulPose(pose);
 
@@ -59,15 +53,8 @@ public class PaperDollRenderer {
 
         entityRenderDispatcher.setRenderShadow(false);
         RenderSystem.runAsFancy(() -> {
-            entityRenderDispatcher.render(entity,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0F,
-                    partialTicks,
-                    guiGraphics.pose(),
-                    guiGraphics.bufferSource(),
-                    0xF000F0
+            entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 0.0F, partialTick, guiGraphics.pose(),
+                    guiGraphics.bufferSource(), 0xF000F0
             );
         });
         guiGraphics.flush();

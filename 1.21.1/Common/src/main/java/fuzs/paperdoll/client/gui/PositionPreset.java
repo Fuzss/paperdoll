@@ -53,7 +53,7 @@ public enum PositionPreset {
 
             if (activeEffects.stream().anyMatch(MobEffectInstance::isVisible)) {
 
-                return activeEffects.stream().anyMatch(effect -> !effect.getEffect().isBeneficial()) ? 50 : 25;
+                return activeEffects.stream().anyMatch(effect -> !effect.getEffect().value().isBeneficial()) ? 50 : 25;
             }
         }
 

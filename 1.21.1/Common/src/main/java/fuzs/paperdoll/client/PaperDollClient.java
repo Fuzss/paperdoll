@@ -3,7 +3,7 @@ package fuzs.paperdoll.client;
 import fuzs.paperdoll.client.handler.PaperDollHandler;
 import fuzs.puzzleslib.api.client.core.v1.ClientModConstructor;
 import fuzs.puzzleslib.api.client.event.v1.ClientTickEvents;
-import fuzs.puzzleslib.api.client.event.v1.renderer.RenderGuiCallback;
+import fuzs.puzzleslib.api.client.event.v1.gui.RenderGuiCallback;
 
 public class PaperDollClient implements ClientModConstructor {
 

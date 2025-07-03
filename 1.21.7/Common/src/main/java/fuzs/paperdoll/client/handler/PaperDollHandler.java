@@ -12,7 +12,6 @@ import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 
 public class PaperDollHandler {
@@ -114,34 +113,6 @@ public class PaperDollHandler {
         }
 
         Profiler.get().pop();
-    }
-
-    private static float getCurrentHeightOffset(Player player, float partialTick) {
-        // crouching check after elytra since you can do both at the same time
-        float standingHeight = player.getDimensions(Pose.STANDING).height();
-        if (player.getFallFlyingTicks() > 0) {
-            float ticksElytraFlying = player.getFallFlyingTicks() + partialTick;
-            float flyingAnimation = Mth.clamp(ticksElytraFlying * 0.09F, 0.0F, 1.0F);
-            float flyingHeight = player.getDimensions(Pose.FALL_FLYING).height() / standingHeight;
-            return Mth.lerp(flyingAnimation, 1.0F, flyingHeight);
-        } else if (player.getSwimAmount(partialTick) > 0.0) {
-            float swimmingAnimation = player.isVisuallySwimming() ? 1.0F : player.getSwimAmount(partialTick);
-            float swimmingHeight = player.getDimensions(Pose.SWIMMING).height() / standingHeight;
-            return Mth.lerp(swimmingAnimation, 1.0F, swimmingHeight);
-        } else if (player.isAutoSpinAttack()) {
-            return player.getDimensions(Pose.SPIN_ATTACK).height() / standingHeight;
-        } else if (player.isCrouching()) {
-            return player.getDimensions(Pose.CROUCHING).height() / standingHeight;
-        } else if (player.isSleeping()) {
-            return player.getDimensions(Pose.SLEEPING).height() / standingHeight;
-        } else if (player.deathTime > 0) {
-            float dyingAnimation = ((float) player.deathTime + partialTick - 1.0F) / 20.0F * 1.6F;
-            dyingAnimation = Math.min(1.0F, Mth.sqrt(dyingAnimation));
-            float dyingHeight = player.getDimensions(Pose.DYING).height() / standingHeight;
-            return Mth.lerp(dyingAnimation, 1.0F, dyingHeight);
-        } else {
-            return 1.0F;
-        }
     }
 
     public static void applyEntityRotations(LivingEntity entity) {

@@ -59,10 +59,19 @@ public class PaperDollRenderer {
      * @see net.minecraft.client.gui.screens.inventory.InventoryScreen#renderEntityInInventory(GuiGraphics, int, int,
      *         int, int, float, Vector3f, Quaternionf, Quaternionf, LivingEntity)
      */
-    public static void renderEntityInInventory(GuiGraphics guiGraphics, int x1, int y1, int x2, int y2, float scale, Vector3f translation, Quaternionf rotation, @Nullable Quaternionf overrideCameraAngle, LivingEntity livingEntity, float partialTick) {
-        EntityRenderDispatcher entityRenderDispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
-        EntityRenderer<? super LivingEntity, ?> entityRenderer = entityRenderDispatcher.getRenderer(livingEntity);
-        EntityRenderState entityRenderState = entityRenderer.createRenderState(livingEntity, partialTick);
+    public static <S extends EntityRenderState> void renderEntityInInventory(GuiGraphics guiGraphics, int x1, int y1, int x2, int y2, float scale, Vector3f translation, Quaternionf rotation, @Nullable Quaternionf overrideCameraAngle, LivingEntity livingEntity, float partialTick) {
+        Minecraft minecraft = Minecraft.getInstance();
+        EntityRenderDispatcher entityRenderDispatcher = minecraft.getEntityRenderDispatcher();
+        EntityRenderer<? super LivingEntity, S> entityRenderer = (EntityRenderer<? super LivingEntity, S>) entityRenderDispatcher.getRenderer(
+                livingEntity);
+        S entityRenderState;
+        // screens might render a player entity, we then need a separate render state
+        if (minecraft.screen != null) {
+            entityRenderState = entityRenderer.createRenderState();
+            entityRenderer.extractRenderState(livingEntity, entityRenderState, partialTick);
+        } else {
+            entityRenderState = entityRenderer.createRenderState(livingEntity, partialTick);
+        }
         entityRenderState.hitboxesRenderState = null;
         guiGraphics.submitEntityRenderState(entityRenderState,
                 scale,
